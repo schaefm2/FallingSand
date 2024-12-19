@@ -12,33 +12,36 @@ function make2darray(cols, rows){
 }
 
 let grid;
-let w = 5;
+let w = 5; // pixel width of each square
 let cols, rows;
 let box = 3;
 let sandHeight; //height of the sand at a col i
 
 let hue = 200;
 let time = 1;
+let osc;
 
 function setup() {
   createCanvas(1000, 500);
-  colorMode(HSB, 360, 255, 255);
+  colorMode(HSB, 360, 255, 255); //the rainbows
   cols = floor(width / w);
   rows = floor(height / w);
   grid = make2darray(cols, rows);
   
   sandHeight = new Array(cols - 1);
   for(let i = 0; i < cols; i++){
-    //grid[i][0] = 1;
     sandHeight[i] = rows;
   }
-  console.log(sandHeight);
-  
+  console.log("Sand height and grid initialized");  
+
+  osc = new p5.Oscillator('sine');
+  osc.freq(240);
+  osc.amp(1);
   
 }
 
 function draw() {
-  
+  osc.start();
   background(0);
   for(let i = 0; i < cols; i++){
     for(let j = 0; j < rows; j++){
