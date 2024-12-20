@@ -20,9 +20,13 @@ let sandHeight; //height of the sand at a col i
 let hue = 200;
 let time = 1;
 let osc;
+let freq = 0;
+let soundStart = true;
 
+let dropRate = .01;
 function setup() {
-  createCanvas(1000, 500);
+  let canvas = createCanvas(1000, 500);
+  canvas.position((windowWidth - width)/2, (windowHeight - height)/2);
   colorMode(HSB, 360, 255, 255); //the rainbows
   cols = floor(width / w);
   rows = floor(height / w);
@@ -34,14 +38,31 @@ function setup() {
   }
   console.log("Sand height and grid initialized");  
 
-  osc = new p5.Oscillator('sine');
-  osc.freq(240);
-  osc.amp(1);
+  osc = new p5.Oscillator('sin');
+  osc.freq(freq);
+  osc.amp(.05);
   
 }
 
 function draw() {
-  osc.start();
+
+  //sound stuff
+  if(!mouseIsPressed){
+    if (freq > 0){
+      freq -= .5;
+    }
+    else{
+      osc.stop();
+      soundStart = true;
+    }
+  }
+  else{
+    if(soundStart){
+      osc.start();
+      soundStart = false;
+    }
+  }
+
   background(0);
   for(let i = 0; i < cols; i++){
     for(let j = 0; j < rows; j++){
@@ -71,18 +92,11 @@ function draw() {
           
           let difference = time - currentState;
           let fallingRow = j + floor(difference/5);
-          console.log("falling to row " + fallingRow);
-          console.log("sandheight: " + sandHeight[i]);
-          //sconsole.log(fallingRow);
           
           // check to make sure we dont skip through layer
           if(fallingRow >= sandHeight[i]){
-            console.log("We set a new sandheight")
             nextgrid[i][sandHeight[i] - 1] = currentState;
             sandHeight[i] = sandHeight[i] - 1;
-
-            
-            //console.log(sandHeight[i]);
           }
           else{
             nextgrid[i][fallingRow] = currentState;
@@ -129,18 +143,23 @@ function draw() {
   }
   grid = nextgrid;
   time += 1;
-  
+  osc.freq(freq);
+
 }
 
 function mouseDragged(){
+  
+  dropRate = 0.000005*freq*freq;
+  if(freq < 200){
+    freq += .5;
+  }
+
   let col = Math.floor(mouseX / w);
   let row = Math.floor(mouseY / w);
   
-  console.log("PLACE A NEW ONE HERE");
-  
   for (let i = -box; i < box; i++){
     for(let j = - box; j < box; j++){
-      if(random(1) < 0.25 ){
+      if(random(1) <  dropRate){
 
         let newCol = col + i;
         let newRow = row + j;
