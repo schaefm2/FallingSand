@@ -143,7 +143,7 @@ function draw() {
   }
   grid = nextgrid;
   time += 1;
-  osc.freq(freq);
+  osc.freq(freq * .75);
 
 }
 
